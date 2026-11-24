@@ -10,14 +10,17 @@ Todo se hace dentro del contenedor `iic-osic-tools`. Cada parte se autocomprueba
 | 3 · Git | 15 min | Tu rama, tu primer commit, push a tu fork | `make git-check` |
 | 4 · PDK | 20 min | Ver qué PDK tienes, explorarlo, completar `pdk_info.sh`, ver una celda | `make celda`, `make entrega` |
 
+Las partes marcadas **[Juntos]** se hacen al mismo tiempo que el instructor en el proyector;
+las marcadas **[Tú solo]** las resuelves por tu cuenta (el instructor pasa a ayudar).
+
 **Entregable:** commit en tu rama `alumno/<tu-nombre>` con `notas_pdk.md` lleno
 (área y tamaño de 3 celdas, corners disponibles), `pdk_info.sh` completo y `respuestas_rutas.txt`.
 
 ---
 
-## Parte 1 · Arranque (10 min)
+## Parte 1 · Arranque (10 min) · [Juntos]
 
-1. **Levanta el contenedor en Docker Desktop.** La primera vez: *Images* → `hpretl/iic-osic-tools` → **Run** →
+1. **Levanta el contenedor en Docker Desktop.** La primera vez: *Images* → `hpretl/iic-osic-tools:2026.09` → **Run** →
    despliega *Optional settings* y llena:
 
    | Campo | Valor |
@@ -51,7 +54,7 @@ Todo se hace dentro del contenedor `iic-osic-tools`. Cada parte se autocomprueba
 
 ---
 
-## Parte 2 · Linux y rutas relativas (15 min)
+## Parte 2 · Linux y rutas relativas (15 min) · [Tú solo]
 
 Los comandos que vas a usar:
 
@@ -83,15 +86,16 @@ make rutas
 
 ---
 
-## Parte 3 · Git, la bitácora del chip (15 min)
+## Parte 3 · Git, la bitácora del chip (15 min) · [Juntos]
 
 En la parte 1 hiciste dos cosas: un **fork** (tu copia del repo en GitHub, donde sí puedes escribir)
 y un **clone** (la copia de tu fork en el contenedor). Ahora:
 
 ```bash
-# 1) Quién eres (una sola vez por contenedor)
+# 1) Quién eres y cómo combinar cambios (una sola vez por contenedor)
 git config --global user.name  "Tu Nombre"
 git config --global user.email "tu@correo.com"
+git config --global pull.rebase false
 
 # 2) De dónde viene el material del curso (para traer los labs nuevos)
 git remote add upstream https://github.com/Misterio12947/curso-rtl-gds-sky130.git
@@ -134,6 +138,13 @@ y copia el token en ese momento (GitHub no lo vuelve a mostrar).
 make git-check
 ```
 
+**Cómo traer los labs nuevos** (al empezar cada sesión, desde tu rama):
+
+```bash
+git fetch upstream
+git pull upstream main      # si abre un editor con un mensaje de "Merge", guarda y cierra
+```
+
 **Qué NO se sube nunca:** el PDK, nada bajo NDA, ni resultados que se regeneran (`.gds`, `.vcd`, `runs/`...).
 Revisa el `.gitignore` de la raíz: ya los excluye.
 
@@ -141,7 +152,7 @@ Revisa el `.gitignore` de la raíz: ya los excluye.
 
 ## Parte 4 · El PDK por dentro (20 min)
 
-### 4.1 ¿Qué PDK tengo?
+### 4.1 ¿Qué PDK tengo? · [Juntos]
 
 El contenedor ya trae SKY130 instalado con `ciel`, el gestor de versiones de PDKs. Pregúntale cuál:
 
@@ -173,7 +184,7 @@ ENV_VERBOSE=1 source ../../scripts/env.sh   # y todas las rutas que fijó
 >
 > Ocupa varios GB. Si existe `/foss/designs/pdks`, `env.sh` lo prefiere sobre el del contenedor.
 
-### 4.2 Explorar
+### 4.2 Explorar · [Juntos]
 
 Responde con `ls`, `find`, `grep` y `less` (las respuestas van a `notas_pdk.md`):
 
@@ -208,7 +219,7 @@ Las piezas que vas a usar:
 | `awk '{print $3}'` | imprime la 3a palabra de cada línea (`$2, $4` = la 2a y la 4a) |
 | `tr -d ';'` | borra los `;` |
 
-#### TODO 1 · Área
+#### TODO 1 · Área · [Juntos]
 
 ```bash
 grep -A500 'cell ("sky130_fd_sc_hd__nand2_1")' $LIB_TT | less        # tu celda y lo que sigue (q = salir)
@@ -222,7 +233,7 @@ grep -A500 'cell ("sky130_fd_sc_hd__nand2_1")' $LIB_TT | grep "area :" | head -1
 #  3.7536000000                        <- ¡listo!
 ```
 
-#### TODO 2 · Tamaño
+#### TODO 2 · Tamaño · [Tú solo]
 
 ```bash
 grep -A8 "MACRO sky130_fd_sc_hd__nand2_1" $CELLLEF
@@ -232,7 +243,7 @@ grep -A8 "MACRO sky130_fd_sc_hd__nand2_1" $CELLLEF | grep SIZE
 
 Termina tú: quédate con la primera línea y luego con la 2a y la 4a palabra. Debe salir `1.380 2.720`.
 
-#### TODO 3 · Pines
+#### TODO 3 · Pines · [Tú solo]
 
 Este comando ya recorta del `.lef` **solo el bloque de tu celda**:
 
@@ -273,7 +284,7 @@ make celda CELDA=inv_1          # ojo: también existen inv_12 e inv_16 (para es
 
 Con `pdk_info.sh` llena la tabla de `notas_pdk.md` (la tercera celda la eliges tú).
 
-### 4.4 Ver la celda
+### 4.4 Ver la celda · [Juntos]
 
 ```bash
 make klayout CELDA=nand2_1
@@ -294,14 +305,19 @@ git push
 make entrega                # debe decir "LISTO para entregar"
 ```
 
+`make entrega` revisa todo junto: los 8 retos de rutas, `notas_pdk.md`, los 3 TODO, y que esté en GitHub.
+
 ## ¿Te atoraste?
 
 Las soluciones están en la rama `soluciones` del repo del curso. Úsalas para **comparar**, no para copiar:
 
 ```bash
-git fetch upstream
+git fetch upstream                                         # sin esto, upstream/soluciones "no existe"
 git diff alumno/<tu-nombre> upstream/soluciones -- pdk_info.sh
 ```
+
+> **Cuidado con `>`:** `comando > archivo` vacía el archivo **antes** de correr el comando, aunque el
+> comando falle. Si te pasa, recupéralo con `git restore archivo` (o `git restore --source=upstream/main archivo`).
 
 ## Origen
 

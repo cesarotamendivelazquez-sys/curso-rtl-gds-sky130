@@ -4,9 +4,9 @@
 #  Corre dentro de iic-osic-tools:   ./scripts/prueba_humo.sh
 #  Manda la captura de la salida un día antes de la sesión 1.
 #
-#  POR VALIDAR: nombres/flags de versión en la etiqueta de imagen del curso
-#  (sobre todo librelane vs openlane).
+#  Validado con hpretl/iic-osic-tools:2026.09 (LibreLane 3.1, Ciel 2.6).
 # =====================================================================
+VERSION_CURSO=2026.09
 cd "$(dirname "$0")/.." || exit 1
 
 ok=0; fail=0
@@ -23,7 +23,13 @@ check() {   # check "<nombre>" <comando...>
 }
 
 echo "== Imagen =="
-echo "  iic-osic-tools ${IIC_OSIC_TOOLS_VERSION:-(versión desconocida)}   <- debe ser la misma para todo el grupo"
+if [ "${IIC_OSIC_TOOLS_VERSION:-}" = "$VERSION_CURSO" ]; then
+  printf '  [OK]    %-12s %s\n' "imagen" "iic-osic-tools $IIC_OSIC_TOOLS_VERSION"; ok=$((ok+1))
+else
+  printf '  [FALLA] %-12s tienes %s; el curso usa %s\n' "imagen" "${IIC_OSIC_TOOLS_VERSION:-desconocida}" "$VERSION_CURSO"
+  printf '          -> en PowerShell: docker pull hpretl/iic-osic-tools:%s  y crea el contenedor con esa imagen\n' "$VERSION_CURSO"
+  fail=$((fail+1))
+fi
 echo "== Herramientas =="
 check yosys     yosys -V
 check openroad  openroad -version
