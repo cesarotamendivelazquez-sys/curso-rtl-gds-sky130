@@ -16,7 +16,7 @@ create_clock -name clk -period $CLK_PERIOD [get_ports clk]
 set_false_path -from [get_ports rst_n]
 
 # Entradas de datos (el lab02 agrega ped_req: descomenta la línea).
-# set_input_delay $IO_DELAY -clock clk [get_ports ped_req]
+set_input_delay $IO_DELAY -clock clk [get_ports ped_req]
 
 # Salidas: las luces.
 set_output_delay $IO_DELAY -clock clk [get_ports {red yellow green}]
