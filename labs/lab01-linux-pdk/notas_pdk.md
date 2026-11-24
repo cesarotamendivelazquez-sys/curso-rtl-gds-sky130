@@ -1,6 +1,6 @@
 # Notas del PDK · Lab01
 
-**Nombre:** 
+**Nombre: C. Ander Velazquez** 
 **PDK_ROOT que usé:** 
 **Versión del PDK (hash de `ciel ls`):** 
 
