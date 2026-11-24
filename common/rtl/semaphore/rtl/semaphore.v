@@ -1,4 +1,7 @@
 `timescale 1ns / 1ps
+// El archivo se llama semaphore.v por compatibilidad con el repo del evento;
+// el módulo se llama semaforo. Excepción de lint revisada y aceptada:
+/* verilator lint_off DECLFILENAME */
 // =====================================================================
 //  semaphore.v  ·  Ejemplo guía "Galletas y Postres: el camino de chips"
 //  Cápsula 2 (Churros / RTL). Este MISMO archivo alimenta los dos flujos:
@@ -17,6 +20,7 @@ module semaforo #(
 )(
     input  wire clk,
     input  wire rst_n,                // reset asíncrono, activo en bajo
+    input  wire ped_req,              // botón peatonal, activo en alto
     output reg  red,
     output reg  yellow,
     output reg  green
@@ -32,13 +36,13 @@ module semaforo #(
     reg [CW-1:0] limit;               // cuántos ticks dura el estado actual
 
     // ---- ¿Cuánto dura el estado actual? -------------------------------
-    //  (la asignación trunca a CW bits automáticamente)
+    //  (de cada parámetro se toman solo los CW bits de abajo)
     always @(*) begin
         case (state)
-            S_GREEN:  limit = T_GREEN;
-            S_YELLOW: limit = T_YELLOW;
-            S_RED:    limit = T_RED;
-            default:  limit = T_RED;
+            S_GREEN:  limit = T_GREEN[CW-1:0];
+            S_YELLOW: limit = T_YELLOW[CW-1:0];
+            S_RED:    limit = T_RED[CW-1:0];
+            default:  limit = T_RED[CW-1:0];
         endcase
     end
 
@@ -53,12 +57,15 @@ module semaforo #(
     end
 
     // ---- Registro de estado + contador --------------------------------
+    //  Se avanza si se acabó el tiempo, o si piden paso estando en verde.
+    wire avanza = (cnt == limit - 1'b1) || (state == S_GREEN && ped_req);
+
     always @(posedge clk or negedge rst_n) begin
         if (!rst_n) begin
             state <= S_GREEN;
             cnt   <= {CW{1'b0}};
-        end else if (cnt == limit - 1'b1) begin
-            state <= next_state;      // se acabó el tiempo: avanza
+        end else if (avanza) begin
+            state <= next_state;      // avanza al siguiente color
             cnt   <= {CW{1'b0}};
         end else begin
             cnt   <= cnt + 1'b1;      // sigue contando
