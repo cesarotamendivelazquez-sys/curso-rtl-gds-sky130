@@ -12,14 +12,18 @@ cd "$(dirname "$0")/.." || exit 1
 ok=0; fail=0
 check() {   # check "<nombre>" <comando...>
   local name=$1; shift
-  local out
-  if out=$("$@" 2>&1 | head -1) && [ -n "$out" ]; then
+  local out rc
+  out=$("$@" 2>&1); rc=$?
+  out=$(printf '%s\n' "$out" | head -1)
+  if [ "$rc" -eq 0 ] && [ -n "$out" ]; then
     printf '  [OK]    %-12s %s\n' "$name" "$out"; ok=$((ok+1))
   else
     printf '  [FALLA] %-12s (no se encontró o no respondió)\n' "$name"; fail=$((fail+1))
   fi
 }
 
+echo "== Imagen =="
+echo "  iic-osic-tools ${IIC_OSIC_TOOLS_VERSION:-(versión desconocida)}   <- debe ser la misma para todo el grupo"
 echo "== Herramientas =="
 check yosys     yosys -V
 check openroad  openroad -version

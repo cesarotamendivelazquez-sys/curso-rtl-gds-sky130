@@ -13,7 +13,7 @@ CELDA ?= nand2_1
 
 help:
 	@echo "Lab 01 · PDKs y Linux para VLSI"
-	@echo "  Parte 1  make check                 herramientas + PDK + carpeta compartida"
+	@echo "  Parte 1  make check                 herramientas + PDK"
 	@echo "  Parte 2  make rutas                 revisa respuestas_rutas.txt"
 	@echo "  Parte 3  make git-check             revisa tu configuración de git, rama y push"
 	@echo "  Parte 4  make pdk                   radiografía del PDK (compárala con lo que exploraste)"
@@ -24,8 +24,6 @@ help:
 
 # ---- Parte 1 ---------------------------------------------------------
 check:
-	@case "$$(pwd -P)" in /foss/designs/*) echo "  [ OK ] Estás en /foss/designs: lo que hagas aquí se ve desde tu máquina";; \
-	  *) echo "  [ ?? ] No estás bajo /foss/designs: al borrar el contenedor perderías tu trabajo";; esac
 	@$(ROOT)/scripts/prueba_humo.sh
 
 # ---- Parte 2 ---------------------------------------------------------

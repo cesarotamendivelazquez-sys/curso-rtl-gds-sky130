@@ -9,27 +9,26 @@ con SKY130 y herramientas open source. Al final tiene DRC/LVS limpios y el timin
 
 ## Arranque rápido
 
+Todo corre dentro del contenedor [`hpretl/iic-osic-tools`](https://github.com/iic-jku/IIC-OSIC-TOOLS)
+con Docker Desktop.
+
 **Antes de la sesión 1:** cuenta de GitHub **y un token** (*Settings → Developer settings →
 Personal access tokens → Tokens (classic)*, permiso `repo`). GitHub ya no acepta tu contraseña para `git push`.
 
-Todo corre dentro del contenedor [`hpretl/iic-osic-tools`](https://github.com/iic-jku/IIC-OSIC-TOOLS)
-(usa la misma etiqueta que se indicó en el aviso del curso).
+1. Docker Desktop → *Images* → `hpretl/iic-osic-tools` → **Run** → *Optional settings*:
+   nombre `TallerRTL2GDS` y host port `8080` para `:80/tcp`.
+2. Abre `http://localhost:8080` (contraseña `abc123`) y una terminal en ese escritorio.
+3. Haz fork de este repo en GitHub y clona **tu** fork:
 
-```bash
-# 1) Levanta el contenedor (desde la carpeta del repo de iic-osic-tools)
-./start_vnc.sh        # o ./start_x.sh en Linux / WSL2
+   ```bash
+   cd /foss/designs
+   git clone https://github.com/<tu-usuario>/curso-rtl-gds-sky130.git
+   cd curso-rtl-gds-sky130
+   make humo                  # herramientas + PDK: debe decir LISTO
+   ```
 
-# 2) Haz fork de este repo en GitHub y, dentro del contenedor, clona TU fork
-cd /foss/designs
-git clone https://github.com/<tu-usuario>/curso-rtl-gds-sky130.git
-cd curso-rtl-gds-sky130
-
-# 3) Prueba de humo: herramientas + PDK
-./scripts/prueba_humo.sh
-
-# 4) Fija el PDK para tu terminal (lo usan todos los labs)
-source scripts/env.sh
-```
+Las siguientes veces inicia el **mismo** contenedor desde *Containers* (▶). Nunca lo borres:
+tu trabajo vive ahí, y tu respaldo es el `git push` de cada lab.
 
 ## Orden de los labs
 

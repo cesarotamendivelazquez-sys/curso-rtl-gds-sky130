@@ -49,7 +49,13 @@ sec = notas.split("## 2.")[1].split("## 3.")[0] if "## 2." in notas else ""
 corners = set(re.findall(r"\b(?:tt|ss|ff|sf|fs)_n?\d+C_\dv\d\d(?:_ccsnoise)?\b", sec))
 rep(len(corners) >= 3, f"Corners listados: {len(corners)}", "lista los .lib de libs.ref/sky130_fd_sc_hd/lib/")
 
-cab = {k: re.search(rf"\*\*{k}:\*\*\s*(\S.*)", notas) for k in ("Nombre", "PDK_ROOT que usé")}
+def campo(k):
+    """Valor después de '**k:**', aunque lo hayan escrito dentro de las negritas: '**k: valor**'."""
+    m = re.search(rf"^\*\*{re.escape(k)}:?\s*(.*)$", notas, re.M)
+    return re.sub(r"[*\s]", "", m.group(1)) if m else ""
+
+
+cab = {k: campo(k) for k in ("Nombre", "PDK_ROOT que usé")}
 rep(all(cab.values()), "Encabezado (nombre y PDK_ROOT)", "llena las primeras líneas de notas_pdk.md")
 
 resp = re.findall(r"^\s+- (.*)$", notas.split("## 3.")[1], re.M) if "## 3." in notas else []
@@ -57,8 +63,8 @@ rep(sum(1 for r in resp if r.strip()) >= 3, "Las 3 preguntas tienen respuesta")
 
 # ---- pdk_info.sh -------------------------------------------------------
 script = (LAB / "pdk_info.sh").read_text(encoding="utf-8")
-rep("____" not in script and "$__" not in script, "pdk_info.sh sin huecos ____",
-    "completa los 3 TODO")
+vacios = len(re.findall(r"^(AREA|TAMANO|PINES)=\$\(\s*\)", script, re.M))
+rep(vacios == 0, f"pdk_info.sh: {3 - vacios}/3 TODO llenos", "llena AREA, TAMANO y PINES (README, parte 4.3)")
 r = subprocess.run(["bash", "-c", "./pdk_info.sh nand2_1"], cwd=LAB, capture_output=True, text=True)
 rep(r.returncode == 0 and "TODO" not in r.stdout, "pdk_info.sh nand2_1 imprime área, tamaño y pines",
     r.stderr.strip()[:120] or "aún imprime TODO")
