@@ -61,6 +61,12 @@ rep(all(cab.values()), "Encabezado (nombre y PDK_ROOT)", "llena las primeras lí
 resp = re.findall(r"^\s+- (.*)$", notas.split("## 3.")[1], re.M) if "## 3." in notas else []
 rep(sum(1 for r in resp if r.strip()) >= 3, "Las 3 preguntas tienen respuesta")
 
+# ---- retos de rutas ----------------------------------------------------
+r = subprocess.run([sys.executable, str(LAB / "scripts/revisar_rutas.py")], cwd=LAB, capture_output=True, text=True)
+m = re.search(r"== (\d+)/(\d+) ==", r.stdout)
+bien_rutas, total = (int(m.group(1)), int(m.group(2))) if m else (0, 8)
+rep(bien_rutas == total, f"Retos de rutas: {bien_rutas}/{total}", "corre  make rutas  para ver cuáles faltan")
+
 # ---- pdk_info.sh -------------------------------------------------------
 script = (LAB / "pdk_info.sh").read_text(encoding="utf-8")
 vacios = len(re.findall(r"^(AREA|TAMANO|PINES)=\$\(\s*\)", script, re.M))

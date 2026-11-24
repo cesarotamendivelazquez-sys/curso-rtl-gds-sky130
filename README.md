@@ -10,15 +10,17 @@ con SKY130 y herramientas open source. Al final tiene DRC/LVS limpios y el timin
 ## Arranque rápido
 
 Todo corre dentro del contenedor [`hpretl/iic-osic-tools`](https://github.com/iic-jku/IIC-OSIC-TOOLS)
-con Docker Desktop.
+con Docker Desktop, en la versión **`2026.09`** (todo el grupo la misma; `latest` cambia con el tiempo).
 
 **Antes de la sesión 1:** cuenta de GitHub **y un token** (*Settings → Developer settings →
 Personal access tokens → Tokens (classic)*, permiso `repo`). GitHub ya no acepta tu contraseña para `git push`.
 
-1. Docker Desktop → *Images* → `hpretl/iic-osic-tools` → **Run** → *Optional settings*:
+1. Baja la imagen del curso (en PowerShell): `docker pull hpretl/iic-osic-tools:2026.09`
+   (o en Docker Desktop: busca `hpretl/iic-osic-tools`, elige el tag `2026.09` y *Pull*).
+2. Docker Desktop → *Images* → `hpretl/iic-osic-tools:2026.09` → **Run** → *Optional settings*:
    nombre `TallerRTL2GDS` y host port `8080` para `:80/tcp`.
-2. Abre `http://localhost:8080` (contraseña `abc123`) y una terminal en ese escritorio.
-3. Haz fork de este repo en GitHub y clona **tu** fork:
+3. Abre `http://localhost:8080` (contraseña `abc123`) y una terminal en ese escritorio.
+4. Haz fork de este repo en GitHub y clona **tu** fork:
 
    ```bash
    cd /foss/designs
@@ -29,6 +31,15 @@ Personal access tokens → Tokens (classic)*, permiso `repo`). GitHub ya no acep
 
 Las siguientes veces inicia el **mismo** contenedor desde *Containers* (▶). Nunca lo borres:
 tu trabajo vive ahí, y tu respaldo es el `git push` de cada lab.
+
+**Al empezar cada sesión, trae los labs nuevos** (desde tu rama `alumno/<tu-nombre>`):
+
+```bash
+git fetch upstream
+git pull upstream main
+```
+
+Alternativa en la web: en tu fork, estando en tu rama, botón **Sync fork** → *Update branch*; luego `git pull`.
 
 ## Orden de los labs
 
