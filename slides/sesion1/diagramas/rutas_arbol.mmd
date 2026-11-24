@@ -1,0 +1,32 @@
+flowchart TB
+    R["curso-rtl-gds-sky130/"]
+    C["common/"]
+    L["labs/"]
+    S["scripts/"]
+    SDC["sdc/"]
+    RTL["rtl/"]
+    F["<b>semaforo.sdc</b>"]
+    L1["<b>lab01-linux-pdk/</b><br/><i>aquí estás</i>"]
+    L3["lab03-verif/"]
+    E["env.sh"]
+
+    R --> C
+    R --> L
+    R --> S
+    C --> SDC --> F
+    C --> RTL
+    L --> L1
+    L --> L3
+    S --> E
+
+    L1 -. "1 · ../" .-> L
+    L -. "2 · ../" .-> R
+
+    classDef aqui fill:#FF3399,stroke:#000,color:#fff
+    classDef meta fill:#00B050,stroke:#000,color:#fff
+    classDef camino fill:#C2F1C8,stroke:#000,color:#000
+    classDef normal fill:#FFFFFF,stroke:#000,color:#000
+    class L1 aqui
+    class F meta
+    class R,L,C,SDC camino
+    class S,RTL,L3,E normal

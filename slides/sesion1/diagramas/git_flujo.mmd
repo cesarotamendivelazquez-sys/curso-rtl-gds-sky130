@@ -1,0 +1,23 @@
+flowchart LR
+    UP[("<b>Repo del curso</b><br/>Misterio12947<br/><i>upstream</i>")]
+    FK[("<b>Tu fork</b><br/>tu-usuario<br/><i>origin</i>")]
+    subgraph C["Tu contenedor"]
+        direction TB
+        M["main"]
+        A["<b>alumno/tu-nombre</b><br/>tus commits"]
+        M --> A
+    end
+
+    UP -- "1 · Fork (en la web)" --> FK
+    FK -- "2 · git clone" --> M
+    A -- "3 · git push" --> FK
+    UP -- "4 · git pull upstream main<br/>(labs nuevos)" --> A
+
+    classDef curso fill:#9933FF,stroke:#000,color:#fff
+    classDef tuyo fill:#00B050,stroke:#000,color:#fff
+    classDef local fill:#FFFFFF,stroke:#000,color:#000
+    classDef rama fill:#61CBF4,stroke:#000,color:#000
+    class UP curso
+    class FK tuyo
+    class M local
+    class A rama

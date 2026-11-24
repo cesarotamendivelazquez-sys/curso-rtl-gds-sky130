@@ -1,0 +1,25 @@
+flowchart LR
+    LIB[".lib<br/><i>timing y potencia</i>"]
+    LEF[".lef + tech LEF<br/><i>geometría abstracta</i>"]
+    GDS["GDS de celdas<br/><i>el layout real</i>"]
+    DEC["Decks DRC / LVS<br/><i>reglas de la fábrica</i>"]
+    SPI["Modelos SPICE<br/><i>los transistores</i>"]
+
+    SYN(["Síntesis"])
+    STA(["STA"])
+    PNR(["Place & Route"])
+    ENS(["GDSII final"])
+    SGN(["Signoff"])
+    ANA(["Diseño analógico"])
+
+    LIB --> SYN
+    LIB --> STA
+    LEF --> PNR
+    GDS --> ENS
+    DEC --> SGN
+    SPI --> ANA
+
+    classDef vista fill:#FFFFFF,stroke:#000,color:#000
+    classDef etapa fill:#9933FF,stroke:#000,color:#fff
+    class LIB,LEF,GDS,DEC,SPI vista
+    class SYN,STA,PNR,ENS,SGN,ANA etapa

@@ -9,7 +9,7 @@ ENV   := source $(ROOT)/scripts/env.sh >/dev/null &&
 CELDA ?= nand2_1
 
 .DEFAULT_GOAL := help
-.PHONY: help check rutas git-check pdk celda klayout entrega clean
+.PHONY: help humo check rutas git-check pdk celda klayout entrega clean
 
 help:
 	@echo "Lab 01 · PDKs y Linux para VLSI"
@@ -23,7 +23,7 @@ help:
 	@echo "           make clean"
 
 # ---- Parte 1 ---------------------------------------------------------
-check:
+check humo:
 	@$(ROOT)/scripts/prueba_humo.sh
 
 # ---- Parte 2 ---------------------------------------------------------

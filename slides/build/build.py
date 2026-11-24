@@ -271,10 +271,16 @@ def caja(slide, x, y, w, h, relleno=None, borde=None, grosor=1.0, redondeo=None,
     return sp
 
 
-def runs_inline(p, texto, size, color=TINTA, fuente=F_TEXTO, negrita=False):
-    """**negrita**, *cursiva* y `código` dentro de un párrafo."""
+def runs_inline(p, texto, size, color=TINTA, fuente=F_TEXTO, negrita=False, cursiva=False):
+    """**negrita**, *cursiva* y `código` dentro de un párrafo (se pueden anidar: **`x`**)."""
     for parte in re.split(r"(\*\*.+?\*\*|`.+?`|\*.+?\*)", texto):
         if not parte:
+            continue
+        if parte.startswith("**") and len(parte) > 4:
+            runs_inline(p, parte[2:-2], size, color, fuente, True, cursiva)
+            continue
+        if parte.startswith("*") and not parte.startswith("**") and len(parte) > 2:
+            runs_inline(p, parte[1:-1], size, color, fuente, negrita, True)
             continue
         r = p.add_run()
         f = r.font
@@ -282,12 +288,9 @@ def runs_inline(p, texto, size, color=TINTA, fuente=F_TEXTO, negrita=False):
         f.color.rgb = rgb(color)
         f.name = fuente
         f.bold = negrita
-        if parte.startswith("**"):
-            r.text, f.bold = parte[2:-2], True
-        elif parte.startswith("`"):
+        f.italic = cursiva
+        if parte.startswith("`"):
             r.text, f.name = parte[1:-1], F_CODIGO
-        elif parte.startswith("*"):
-            r.text, f.italic = parte[1:-1], True
         else:
             r.text = parte
 
@@ -428,8 +431,28 @@ def cajas_vinetas(slide, items, x, y0, w, y1):
     return y
 
 
-def tabla(slide, filas, x, y, w, color, size=14):
+def anchos_columnas(filas, nc, w, size):
+    """Ninguna columna más angosta que su palabra más larga; el resto se reparte según el texto."""
+    def celdas(c):
+        return [limpiar_md(f[c]) if c < len(f) else "" for f in filas]
+    palabra = [max((len(p) for t in celdas(c) for p in t.split()), default=1) for c in range(nc)]
+    minimos = [pw * size * 0.6 / 72 + 0.25 for pw in palabra]
+    if sum(minimos) > w:
+        return None
+    texto = [min(40, max(len(t) for t in celdas(c))) for c in range(nc)]
+    sobra = w - sum(minimos)
+    return [m + sobra * t / sum(texto) for m, t in zip(minimos, texto)]
+
+
+def tabla(slide, filas, x, y, w, color, size=None):
     nf, nc = len(filas), max(len(f) for f in filas)
+    tamanos = [size] if size else ([20, 18, 16, 14, 12] if nf <= 4 else [16, 14, 12] if nf <= 7 else [14, 12])
+    for size in tamanos:
+        anchos = anchos_columnas(filas, nc, w, size)
+        if anchos:
+            break
+    if not anchos:
+        anchos = [w / nc] * nc
     alto_fila = size * 1.9 / 72
     gt = slide.shapes.add_table(nf, nc, Inches(x), Inches(y), Inches(w), Inches(alto_fila * nf))
     gt.name = "tabla"
@@ -438,6 +461,8 @@ def tabla(slide, filas, x, y, w, color, size=14):
     tblPr = tbl._tbl.tblPr
     for attr in ("bandRow", "firstRow"):
         tblPr.set(attr, "0")
+    for c in range(nc):
+        tbl.columns[c].width = Emu(int(Inches(anchos[c])))
     hexc = COLORES.get(color, color)
     for r, fila in enumerate(filas):
         tbl.rows[r].height = Inches(alto_fila)
@@ -467,9 +492,9 @@ def bloque_codigo(slide, lang, etiqueta, codigo, x, y, w, h_max, color):
         y += 0.55
     lineas = codigo.splitlines() or [""]
     larga = max(len(l) for l in lineas)
-    for size in (18, 16, 14, 13, 12):
+    for size in (20, 18, 16, 15, 14, 13, 12):
         alto = len(lineas) * size * 1.25 / 72 + 0.65
-        if alto <= h_max - (0.55 if etiqueta else 0) and larga * size * 0.6 / 72 <= w - 0.4:
+        if alto <= h_max - (0.55 if etiqueta else 0) and larga * size * 0.56 / 72 <= w - 0.45:
             break
     alto = min(alto, h_max)
     c = caja(slide, x, y, w, alto, relleno=TERMINAL, borde="BFBFBF", grosor=0.75, redondeo=0.04,

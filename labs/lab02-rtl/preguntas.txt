@@ -1,0 +1,26 @@
+# =====================================================================
+#  Lab02 · Parte 1 · Las 4 piezas del semáforo
+#  Lee ../../common/rtl/semaphore/rtl/semaphore.v y escribe tu respuesta
+#  después de "Pn:" (una sola palabra o número). Revisa con:
+#      make preguntas
+#
+#  Las piezas:  A = codificación de estados    B = siguiente estado
+#               C = registro + contador        D = salidas
+# =====================================================================
+
+# P1 (A, B, C o D) ¿En qué pieza se decide A QUÉ color sigue cada color?
+P1:
+
+# P2 (A, B, C o D) ¿En qué pieza se decide CUÁNDO se cambia de color?
+P2:
+
+# P3 (número) Con CW = 8, ¿cuántos flip-flops (bits de registro) tiene el diseño?
+P3:
+
+# P4 (registro o combinacional) La señal limit está declarada como reg.
+#    ¿Se vuelve un registro o lógica combinacional?
+P4:
+
+# P5 (Moore o Mealy) Cuando agregues ped_req, ¿el semáforo seguirá siendo
+#    Moore o se volverá Mealy?
+P5:

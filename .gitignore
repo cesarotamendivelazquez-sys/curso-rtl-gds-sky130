@@ -19,6 +19,9 @@ gf180mcu*/
 *.log
 *.jou
 
+# ---- Salidas de los labs (make clean las borra) ----
+labs/*/build/
+
 # ---- Simulación (Icarus / Verilator / GTKWave) ----
 sim_*
 *.vvp

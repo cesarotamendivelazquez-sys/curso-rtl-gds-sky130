@@ -1,0 +1,19 @@
+flowchart LR
+    R["<b>sky130A/</b>"]
+    REF["<b>libs.ref/</b><br/><i>vistas de cada librería</i>"]
+    TEC["<b>libs.tech/</b><br/><i>archivos por herramienta</i>"]
+    HD["sky130_fd_sc_hd/"]
+    V1["lib/ · lef/ · techlef/<br/>gds/ · verilog/ · spice/<br/>mag/ · maglef/ · cdl/"]
+    T1["klayout/ · magic/ · netgen/<br/>ngspice/ · librelane/ · xschem/"]
+
+    R --> REF --> HD --> V1
+    R --> TEC --> T1
+
+    classDef raiz fill:#000000,stroke:#000,color:#fff
+    classDef ref fill:#61CBF4,stroke:#000,color:#000
+    classDef tec fill:#FF3399,stroke:#000,color:#fff
+    classDef hoja fill:#FFFFFF,stroke:#000,color:#000
+    class R raiz
+    class REF,HD ref
+    class TEC tec
+    class V1,T1 hoja

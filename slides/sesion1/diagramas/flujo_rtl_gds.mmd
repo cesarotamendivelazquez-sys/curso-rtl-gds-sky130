@@ -1,0 +1,22 @@
+flowchart LR
+    RTL["<b>S2 · RTL</b><br/>Churros<br/><i>semaphore.v</i>"]
+    VER["<b>S3 · Verificación</b><br/>Flan<br/><i>PASS / FAIL</i>"]
+    SYN["<b>S4 · Síntesis</b><br/>Polvorones<br/><i>netlist.v</i>"]
+    PNR["<b>S5 · Place & Route</b><br/>Tres Leches<br/><i>DEF / ODB</i>"]
+    STA["<b>S6 · STA y signoff</b><br/>Cajeta<br/><i>slack ≥ 0</i>"]
+    GDS(["<b>GDSII</b><br/>a la fábrica"])
+    PDK[("<b>S1 · PDK SKY130</b><br/>.lib · .lef · GDS · reglas")]
+
+    RTL --> VER --> SYN --> PNR --> STA --> GDS
+    PDK -.-> SYN
+    PDK -.-> PNR
+    PDK -.-> STA
+
+    classDef front fill:#61CBF4,stroke:#000,color:#000
+    classDef back fill:#9933FF,stroke:#000,color:#fff
+    classDef fin fill:#00B050,stroke:#000,color:#fff
+    classDef pdk fill:#FFFFFF,stroke:#000,color:#000
+    class RTL,VER front
+    class SYN,PNR,STA back
+    class GDS fin
+    class PDK pdk

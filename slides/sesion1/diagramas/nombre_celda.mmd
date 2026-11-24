@@ -1,0 +1,19 @@
+flowchart TB
+    subgraph N[" "]
+        direction LR
+        P1["<b>sky130</b>"] ~~~ P2["<b>fd</b>"] ~~~ P3["<b>sc</b>"] ~~~ P4["<b>hd</b>"] ~~~ P5["<b>nand2</b>"] ~~~ P6["<b>1</b>"]
+    end
+    P1 --> D1["Proceso de<br/>130 nm de<br/>SkyWater"]
+    P2 --> D2["Hecha por la<br/>fundidora<br/>(foundry)"]
+    P3 --> D3["Standard<br/>cell"]
+    P4 --> D4["High density<br/>(hay hs, ms,<br/>ls, hdll)"]
+    P5 --> D5["Función:<br/>NAND de<br/>2 entradas"]
+    P6 --> D6["Fuerza:<br/>_1, _2, _4…<br/>más corriente"]
+
+    classDef lib fill:#9933FF,stroke:#000,color:#fff
+    classDef cel fill:#00B050,stroke:#000,color:#fff
+    classDef desc fill:#FFFFFF,stroke:#000,color:#000
+    class P1,P2,P3,P4 lib
+    class P5,P6 cel
+    class D1,D2,D3,D4,D5,D6 desc
+    style N fill:none,stroke:none

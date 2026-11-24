@@ -1,0 +1,24 @@
+flowchart LR
+    WIN["<b>Tu Windows</b>"]
+    DD["<b>Docker Desktop</b><br/>imagen iic-osic-tools:2026.09"]
+    subgraph C["Contenedor TallerRTL2GDS"]
+        direction TB
+        ESC["Escritorio Linux<br/><i>localhost:8080</i>"]
+        HER["Herramientas<br/><i>yosys · openroad · klayout · …</i>"]
+        PDK["PDK SKY130<br/><i>/foss/pdks</i>"]
+        REPO["Tu repo<br/><i>/foss/designs</i>"]
+    end
+    GH[("<b>GitHub</b><br/>tu fork")]
+
+    WIN --> DD --> ESC
+    ESC --- HER
+    HER --- PDK
+    HER --- REPO
+    REPO <-- "git push / pull" --> GH
+
+    classDef host fill:#FFFFFF,stroke:#000,color:#000
+    classDef cont fill:#61CBF4,stroke:#000,color:#000
+    classDef nube fill:#00B050,stroke:#000,color:#fff
+    class WIN,DD host
+    class ESC,HER,PDK,REPO cont
+    class GH nube
