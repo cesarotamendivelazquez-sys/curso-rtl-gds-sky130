@@ -3,8 +3,8 @@
 Al salir, escribes una **FSM sintetizable sin latches** y la pasas por **lint** en cero warnings.
 El diseño es el semáforo del curso: le agregas un **botón peatonal** (`ped_req`).
 
-> **POR VALIDAR** (partes 4 y 5) en `hpretl/iic-osic-tools:2026.09` (Verilator 5.052, Yosys 0.69, Icarus 14).
-> Las partes 1 a 3 ya se corrieron en la imagen.
+> **POR VALIDAR:** `make entrega` en verde en `hpretl/iic-osic-tools:2026.09` (Verilator 5.052, Yosys 0.69,
+> Icarus 14). Lo demás ya se corrió en la imagen.
 
 | Parte | Tiempo | Qué haces | Cómo sabes que quedó |
 | --- | --- | --- | --- |
@@ -154,7 +154,8 @@ Sin botón (`ped_req = 0`) todo se comporta exactamente como antes.
    `../../common/sdc/semaforo.sdc` descomenta la línea de `set_input_delay` de `ped_req`
    (borra el `#` del inicio). La usan los labs 4, 5 y 6.
 
-6. **Commit** (el botón ya funciona; guárdalo antes de romper algo a propósito en la parte 4):
+6. **Commit. No te lo saltes:** en la parte 4 vas a romper el archivo a propósito y lo regresas con
+   `git restore`, que regresa **al último commit**. Si tu botón no está en un commit, `git restore` lo borra.
 
    ```bash
    git status
@@ -175,6 +176,15 @@ Sin botón (`ped_req = 0`) todo se comporta exactamente como antes.
 Un **latch** aparece cuando una señal de un `always @(*)` no recibe valor en **todos** los caminos:
 el hardware tiene que "recordar" el valor anterior. En un ASIC eso complica el timing y casi siempre
 es un error.
+
+0. **Antes de romper nada**, confirma que tu parte 3 está guardada:
+
+   ```bash
+   git status --short ../../common     # no debe salir NADA
+   git log --oneline -1                # tu commit "lab02: boton peatonal ped_req"
+   ```
+
+   Si sale algún archivo, regresa a la parte 3, paso 6, y haz el commit.
 
 1. En `semaphore.v`, **borra el renglón `default:` del `case` que calcula `limit`** y guarda.
    `state` tiene 2 bits (4 valores) y el `case` solo cubre 3.
@@ -209,8 +219,8 @@ es un error.
 ### 5.1 DECLFILENAME · [Juntos]
 
 El archivo se queda como `semaphore.v` (así se llama en el repo del evento y en los 6 labs), así que
-este aviso no se "arregla": se documenta una **excepción**. Pega esto en la línea 2 de `semaphore.v`,
-justo debajo de `` `timescale ``:
+este aviso no se "arregla": se documenta una **excepción**. Copia **las 3 líneas completas** (incluidos
+el `/*` y el `*/`) y pégalas en la línea 2 de `semaphore.v`, justo debajo de `` `timescale ``:
 
 ```verilog
 // El archivo se llama semaphore.v por compatibilidad con el repo del evento;
@@ -261,6 +271,9 @@ git diff HEAD upstream/soluciones -- ../../common/rtl/semaphore/rtl/semaphore.v
 | `[MAL ] boton en amarillo (ignorar)` | El botón también actúa fuera del verde |
 | `[MAL ] boton al inicio del verde`, sale verde | El botón no adelanta el cambio, o lo hace un tick tarde |
 | `make latch` dice LATCH después de la parte 4 | Te faltó el `git restore` |
+| Después del `git restore` tu `ped_req` desapareció | No hiciste el commit de la parte 3: `git restore` regresa al último commit. Si `gedit` sigue abierto, `Ctrl+Z`; si no, vuelve a escribirlo |
+| `syntax error` en la línea de `verilator lint_off` | Copiaste la excepción sin el `/*` o sin el `*/` |
+| `git push`: `! [rejected] ... (fetch first)` | Tu rama en GitHub tiene un commit que tú no (por ejemplo, usaste el botón *Sync fork*): `git pull` y otra vez `git push` |
 
 ## Origen
 

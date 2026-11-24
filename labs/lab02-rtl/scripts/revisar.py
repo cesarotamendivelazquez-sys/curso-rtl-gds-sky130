@@ -62,7 +62,9 @@ def lint_datos():
 def cmd_lint():
     print(f"$ verilator --lint-only -Wall {RTL}")
     rc, texto, codigos, errores = lint_datos()
-    print(texto.rstrip() or "(sin mensajes)")
+    # Verilator 5.052 imprime un reporte de estadísticas al terminar: no aporta aquí.
+    texto = "\n".join(l for l in texto.splitlines() if not l.startswith(("- V e r i l a t", "- Verilator:")))
+    print(texto.strip() or "(sin mensajes)")
     print()
     if rc == 0 and not codigos:
         print(f"{V}== LINT LIMPIO: 0 warnings =={N}")
