@@ -51,13 +51,13 @@ BLOQUE=$(sed -n "/^MACRO $CELDA\$/,/^END $CELDA\$/p" "$LEF")   # solo el bloque 
 
 # ---- TODO 1 · ÁREA (del .lib) -------------------------------------------
 #  Arma el comando en la terminal (README, parte 4.3) y pégalo entre $( y )
-AREA=$( )
+AREA=$(grep -A500 "$PATRON_LIB" "$LIB" | grep "area :" | head -1 | awk '{print $3}' | tr -d ';')
 
 # ---- TODO 2 · TAMAÑO (del .lef): debe dar "ancho alto", p.ej. "1.380 2.720"
-TAMANO=$( )
+TAMANO=$(grep -A8 "$PATRON_LEF" "$LEF" | grep SIZE | head -1 | awk '{print $2, $4}')
 
 # ---- TODO 3 · PINES (del .lef): un nombre de pin por línea ---------------
-PINES=$( )
+PINES=$(echo "$BLOQUE" | grep PIN | awk '{print $2}')
 
 # =====================================================================
 #  Reporte (ya está hecho: no hay que tocarlo)
