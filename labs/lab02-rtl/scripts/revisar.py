@@ -82,9 +82,16 @@ def cmd_lint():
 # ---------------------------------------------------------------------
 def latch_datos():
     rc, out, err = correr(["yosys", "-p", f"read_verilog {RTL}; proc"], mostrar=False)
-    lineas = [l for l in out.splitlines() if "atch inferred for signal" in l]
-    hay = [l for l in lineas if l.startswith("Latch inferred")]
+    # Yosys 0.33 imprime "Latch inferred for signal ..."; Yosys 0.69 lo imprime
+    # como "Warning: Latch inferred for signal `\\semaforo.\\limit [2:0]' ...".
+    lineas = [l for l in (out + err).splitlines() if "atch inferred for signal" in l]
+    lineas = list(dict.fromkeys(lineas))          # sin repetidos (stdout + stderr)
+    hay = [l for l in lineas if es_latch(l)]
     return rc, out + err, lineas, hay
+
+
+def es_latch(linea):
+    return not re.match(r"\s*No latch inferred", linea)
 
 
 def cmd_latch():
@@ -94,13 +101,18 @@ def cmd_latch():
         print(texto[-1500:])
         print(f"{R}== Yosys no pudo leer el diseño (error arriba) =={N}")
         return 0
+    # Yosys 0.69 parte una señal en tramos (limit [2:0], limit [7:3]): se agrupa por señal.
+    senales = {}
     for l in lineas:
         senal = re.search(r"signal `\\[^.]+\.\\([^']+)'", l)
-        nombre = senal.group(1) if senal else l
-        print(f"  {R if l.startswith('Latch') else V}{'LATCH  ' if l.startswith('Latch') else 'sin latch'}{N}  {nombre}")
+        nombre = re.sub(r"\s*\[[^\]]*\]$", "", senal.group(1)) if senal else l
+        senales[nombre] = senales.get(nombre, False) or es_latch(l)
+    for nombre, latch in senales.items():
+        print(f"  {R}LATCH    {N}  {nombre}" if latch else f"  {V}sin latch{N}  {nombre}")
+    hay = [n for n, latch in senales.items() if latch]
     print()
     if hay:
-        print(f"{R}== {len(hay)} LATCH(ES) inferido(s): una señal combinacional no tiene valor en todos los caminos =={N}")
+        print(f"{R}== LATCH en: {', '.join(hay)} · una señal combinacional no tiene valor en todos los caminos =={N}")
     else:
         print(f"{V}== SIN LATCHES: toda señal combinacional tiene valor en todos los caminos =={N}")
     return 0
@@ -114,8 +126,9 @@ def sim_una(nombre, tb, exe, marca_pass):
     BUILD.mkdir(exist_ok=True)
     print(f"--- {nombre} ---")
     rc, out, err = correr(["iverilog", "-g2012", "-Wportbind", "-o", f"build/{exe}", RTL, tb])
-    avisos = [l for l in (out + err).splitlines() if "dangling" in l or "warning" in l.lower()]
-    for l in (out + err).strip().splitlines():
+    msgs = list(dict.fromkeys((out + err).strip().splitlines()))   # Icarus 14 repite errores
+    avisos = [l for l in msgs if "dangling" in l or "warning" in l.lower()]
+    for l in msgs:
         print("  " + l)
     if rc != 0:
         if "is not a port of" in err and "ped_req" in err:
@@ -242,7 +255,7 @@ def cmd_entrega():
         "esos warnings se arreglan en el código, no se apagan")
 
     rc, _, _, hay = latch_datos()
-    rep(rc == 0 and not hay, "Sin latches (Yosys)" if not hay else f"{len(hay)} latch(es) inferido(s)",
+    rep(rc == 0 and not hay, "Sin latches (Yosys)" if not hay else "Yosys infiere latch(es)",
         "corre  make latch ; ¿dejaste un case sin default? (git restore lo regresa)")
 
     print("  ... simulando (make sim muestra el detalle)")

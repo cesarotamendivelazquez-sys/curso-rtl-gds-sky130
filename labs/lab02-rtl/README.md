@@ -3,8 +3,8 @@
 Al salir, escribes una **FSM sintetizable sin latches** y la pasas por **lint** en cero warnings.
 El diseño es el semáforo del curso: le agregas un **botón peatonal** (`ped_req`).
 
-> **POR VALIDAR** en `hpretl/iic-osic-tools:2026.09`. Se probó con Verilator 5.020, Yosys 0.33 e Icarus 12;
-> la imagen trae versiones más nuevas y los mensajes pueden cambiar un poco.
+> **POR VALIDAR** (partes 4 y 5) en `hpretl/iic-osic-tools:2026.09` (Verilator 5.052, Yosys 0.69, Icarus 14).
+> Las partes 1 a 3 ya se corrieron en la imagen.
 
 | Parte | Tiempo | Qué haces | Cómo sabes que quedó |
 | --- | --- | --- | --- |
@@ -180,14 +180,14 @@ es un error.
    `state` tiene 2 bits (4 valores) y el `case` solo cubre 3.
 
    ```bash
-   make lint       # ¿cuál warning es nuevo?
+   make lint       # ¿cuáles warnings son nuevos?
    make latch      # ¿qué señal se volvió latch?
    make show       # opcional: busca la caja $dlatch
    ```
 
 2. **Regresa ese `default`** (`git restore ../../common/rtl/semaphore/rtl/semaphore.v`) y ahora
    **borra el `default:` del `case` de las salidas** (pieza D). Repite `make lint` y `make latch`.
-   Verilator se sigue quejando… ¿y Yosys? ¿Por qué esta vez no hay latch?
+   ¿Qué warning de Verilator se quedó y cuál desapareció? ¿Y Yosys? ¿Por qué esta vez no hay latch?
    (Pista: mira la primera línea dentro de ese `always`.)
 
 3. Regresa todo a tu commit y confirma:
@@ -198,8 +198,9 @@ es un error.
    make latch          # SIN LATCHES
    ```
 
-> **La lección:** Verilator te avisa del **riesgo** (un `case` incompleto). Yosys te dice lo que
-> **construyó** (un latch o no). Por eso se revisan las dos cosas.
+> **La lección:** `CASEINCOMPLETE` es un aviso de **estilo**: el `case` no cubre todos los valores, haya
+> latch o no. `LATCH` (Verilator) y `Latch inferred` (Yosys) dicen que **de verdad** se construyó un
+> latch. Por eso el lint se deja en cero: cuando aparece algo nuevo, salta a la vista.
 
 ---
 
