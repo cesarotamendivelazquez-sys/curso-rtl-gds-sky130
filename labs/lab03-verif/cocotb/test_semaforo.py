@@ -28,12 +28,18 @@ async def test_dirigido(dut):
     tb = Banco(dut)
     await tb.arranca()          # sin modelo: aquí el que revisa eres tú
 
-    # TODO 1 (parte 3.2): justo después de arranca() el semáforo acaba de salir
-    # del reset. Durante 2 vueltas completas, revisa que:
-    #   - los colores salgan en el orden verde -> amarillo -> rojo, y
-    #   - cada color dure exactamente tb.T[color] ticks.
-    # Pista: lee la luz con tb.luz(), avanza con await tb.ticks(1) y cuenta.
-    raise NotImplementedError("TODO 1: escribe el test dirigido")
+    # Solución: en cada vuelta, cada color debe salir en orden y durar tb.T[color].
+    for vuelta in range(1, 3):
+        for color in ("verde", "amarillo", "rojo"):
+            luz = tb.luz()
+            assert luz == color, f"vuelta {vuelta}: esperaba {color} y está {luz}"
+            dura = 0
+            while tb.luz() == color:
+                dura += 1
+                await tb.ticks(1)
+                assert dura <= tb.T[color], f"vuelta {vuelta}: {color} dura más de {tb.T[color]} ticks"
+            assert dura == tb.T[color], f"vuelta {vuelta}: {color} duró {dura} ticks y debía durar {tb.T[color]}"
+            tb.log.info("vuelta %d: %-8s %d ticks  ok", vuelta, color, dura)
 
     tb.cierra()
 
@@ -43,14 +49,14 @@ async def test_aleatorio(dut):
     """Aleatorio: pulsos de ped_req y resets al azar; checker y modelo siempre activos."""
     tb = Banco(dut)
     await tb.arranca(modelo=True)   # el comparador revisa cada tick contra el modelo
-
-    # TODO 2 (parte 3.3): durante unos cientos de pasos, elige al azar qué hacer:
-    #   - apretar el botón (tb.pulso) un número de ticks al azar,
-    #   - dar un reset (tb.reset) de duración al azar (de vez en cuando, no siempre),
-    #   - o solo esperar (tb.ticks) un número de ticks al azar.
-    # Usa el módulo random (cocotb le pone la semilla: sale en el log como "seed").
-    # Al final, tb.cierra() revisa la COBERTURA: si tu estímulo nunca apretó el
-    # botón en algún color, o dio menos de 3 resets, el test falla.
-    raise NotImplementedError("TODO 2: escribe el test aleatorio")
+    
+    for _ in range(300):
+    	dado = random.random()
+    	if dado < 0.30:
+    		await tb.pulso(random.randint(1, 3))     # botón de 1 a 3 ticks
+    	elif dado < 0.35:
+    		await tb.reset(random.randint(1, 3))     # reset de 1 a 3 ticks
+    	else:
+    		await tb.ticks(random.randint(1, 6))     # solo esperar
 
     tb.cierra()
