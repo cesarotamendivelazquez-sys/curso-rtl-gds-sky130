@@ -1,0 +1,24 @@
+flowchart LR
+    A["<b>A · Codificación</b><br/>un número por estado<br/><i>localparam</i>"]
+    B["<b>B · Siguiente estado</b><br/>¿a qué estado sigue?<br/><i>always @(*)</i>"]
+    C["<b>C · Registro + contador</b><br/>recuerda el estado y<br/>cuenta ticks<br/><i>always @(posedge clk)</i>"]
+    D["<b>D · Salidas</b><br/>qué luz se prende<br/><i>always @(*)</i>"]
+    L(["luces"])
+    CLK(("clk<br/>rst_n"))
+
+    A -.-> B
+    B -- next_state --> C
+    C -- state --> B
+    C -- state --> D --> L
+    CLK -.-> C
+
+    classDef cod fill:#FFFFFF,stroke:#000,color:#000
+    classDef comb fill:#61CBF4,stroke:#000,color:#000
+    classDef reg fill:#9933FF,stroke:#000,color:#fff
+    classDef out fill:#00B050,stroke:#000,color:#fff
+    classDef clk fill:#FF3399,stroke:#000,color:#fff
+    class A cod
+    class B comb
+    class C reg
+    class D out
+    class CLK clk

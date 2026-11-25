@@ -3,9 +3,6 @@
 Al salir, escribes una **FSM sintetizable sin latches** y la pasas por **lint** en cero warnings.
 El diseño es el semáforo del curso: le agregas un **botón peatonal** (`ped_req`).
 
-> **POR VALIDAR:** `make entrega` en verde en `hpretl/iic-osic-tools:2026.09` (Verilator 5.052, Yosys 0.69,
-> Icarus 14). Lo demás ya se corrió en la imagen.
-
 | Parte | Tiempo | Qué haces | Cómo sabes que quedó |
 | --- | --- | --- | --- |
 | 1 · Leer | 10 min | Ubicar las 4 piezas en `semaphore.v` | `make preguntas` |
@@ -273,7 +270,7 @@ git diff HEAD upstream/soluciones -- ../../common/rtl/semaphore/rtl/semaphore.v
 | `make latch` dice LATCH después de la parte 4 | Te faltó el `git restore` |
 | Después del `git restore` tu `ped_req` desapareció | No hiciste el commit de la parte 3: `git restore` regresa al último commit. Si `gedit` sigue abierto, `Ctrl+Z`; si no, vuelve a escribirlo |
 | `syntax error` en la línea de `verilator lint_off` | Copiaste la excepción sin el `/*` o sin el `*/` |
-| `git push`: `! [rejected] ... (fetch first)` | Tu rama en GitHub tiene un commit que tú no (por ejemplo, usaste el botón *Sync fork*): `git pull` y otra vez `git push` |
+| `git push`: `! [rejected] ... (fetch first)` | Tu rama en GitHub tiene commits que tú no (los subiste desde otro clon, o editaste en la web): `git pull` y otra vez `git push` |
 
 ## Origen
 

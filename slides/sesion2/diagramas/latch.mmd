@@ -1,0 +1,19 @@
+flowchart LR
+    Q{"¿La señal recibe valor<br/>en TODOS los caminos<br/>del always @(*)?"}
+    SI["<b>Sí</b><br/>lógica combinacional"]
+    NO["<b>No</b><br/>tiene que recordar<br/>el valor anterior"]
+    L["<b>LATCH</b><br/>memoria sin reloj:<br/>STA no la entiende bien"]
+    F1["default en el case"]
+    F2["valor por defecto<br/>al inicio del always"]
+
+    Q -- sí --> SI
+    Q -- no --> NO --> L
+    F1 -.-> SI
+    F2 -.-> SI
+
+    classDef ok fill:#00B050,stroke:#000,color:#fff
+    classDef mal fill:#FF3399,stroke:#000,color:#fff
+    classDef idea fill:#C2F1C8,stroke:#000,color:#000
+    class SI ok
+    class NO,L mal
+    class F1,F2 idea

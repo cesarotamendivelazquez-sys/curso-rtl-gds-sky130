@@ -1,0 +1,18 @@
+# prueba.sby · La propiedad "una sola luz" sobre TU semáforo (lab03, parte 4)
+#   sby -f prueba.sby        (o: make formal)
+# mode prove = BMC + inducción: si pasa, se cumple para CUALQUIER número de ciclos.
+[options]
+mode prove
+depth 20
+
+[engines]
+smtbmc
+
+[script]
+read -formal formal_top.v
+read -formal semaphore.v
+prep -top formal_top
+
+[files]
+formal_top.v
+../../../common/rtl/semaphore/rtl/semaphore.v

@@ -1,0 +1,20 @@
+# =====================================================================
+#  Lab 03 · Respuestas de la parte 2 (el bug en la onda)
+#  Escribe tu respuesta después de los dos puntos y guarda.
+#  Revisa con:  make respuestas
+# =====================================================================
+
+# R1. Con el bug metido, make sim imprime varios FAIL. ¿En qué tiempo, en ns,
+#     aparece el PRIMERO? (Ojo: el TB imprime el tiempo en ps.)
+R1:
+
+# R2. Pon el marcador de GTKWave en ese primer ciclo con dos luces.
+#     ¿Cuánto vale state ahí? (un número)
+R2:
+
+# R3. El TB base nunca podría encontrar un bug en el botón peatonal. ¿Por qué?
+#     A) Porque Icarus no simula las entradas de 1 bit
+#     B) Porque en el TB base ped_req está conectado a 1'b0: nadie lo aprieta
+#     C) Porque el checker solo corre cuando el semáforo está en rojo
+#     D) Porque ped_req es asíncrono y no se puede simular
+R3:

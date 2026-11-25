@@ -1,0 +1,18 @@
+flowchart LR
+    IN(["entradas"])
+    R1["<b>Registro</b><br/>flip-flops"]
+    C1["<b>Lógica combinacional</b><br/>compuertas, muxes, sumadores"]
+    R2["<b>Registro</b><br/>flip-flops"]
+    OUT(["salidas"])
+    CLK(("clk"))
+
+    IN --> R1 --> C1 --> R2 --> OUT
+    CLK -.-> R1
+    CLK -.-> R2
+
+    classDef reg fill:#9933FF,stroke:#000,color:#fff
+    classDef comb fill:#61CBF4,stroke:#000,color:#000
+    classDef clk fill:#FF3399,stroke:#000,color:#fff
+    class R1,R2 reg
+    class C1 comb
+    class CLK clk

@@ -1,0 +1,17 @@
+flowchart LR
+    A1["<b>assign</b> y = ...;"]
+    A2["<b>always @(*)</b><br/>con <b>=</b>"]
+    A3["<b>always @(posedge clk<br/>or negedge rst_n)</b><br/>con <b>&lt;=</b>"]
+    C["<b>Combinacional</b><br/>compuertas, $mux, $eq<br/><i>no recuerda nada</i>"]
+    S["<b>Secuencial</b><br/>flip-flops, $adff<br/><i>recuerda entre flancos</i>"]
+
+    A1 --> C
+    A2 --> C
+    A3 --> S
+
+    classDef cod fill:#FFFFFF,stroke:#000,color:#000
+    classDef comb fill:#61CBF4,stroke:#000,color:#000
+    classDef sec fill:#9933FF,stroke:#000,color:#fff
+    class A1,A2,A3 cod
+    class C comb
+    class S sec

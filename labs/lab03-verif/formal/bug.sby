@@ -1,0 +1,18 @@
+# bug.sby · La misma propiedad sobre un semáforo con bug (lab03, parte 4)
+#   sby -f bug.sby           (o: make formal-bug)
+# mode bmc: busca, ciclo a ciclo y hasta 20 ciclos, una forma de romper la propiedad.
+[options]
+mode bmc
+depth 20
+
+[engines]
+smtbmc
+
+[script]
+read -formal formal_top.v
+read -formal semaforo_bug.v
+prep -top formal_top
+
+[files]
+formal_top.v
+semaforo_bug.v

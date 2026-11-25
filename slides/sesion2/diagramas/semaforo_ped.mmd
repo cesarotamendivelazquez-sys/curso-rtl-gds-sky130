@@ -1,0 +1,15 @@
+stateDiagram-v2
+    direction TB
+    [*] --> VERDE : rst_n = 0
+    VERDE --> AMARILLO : pasaron T_GREEN ticks
+    VERDE --> AMARILLO : ped_req = 1 (en el siguiente tick)
+    AMARILLO --> ROJO : pasaron T_YELLOW ticks
+    ROJO --> VERDE : pasaron T_RED ticks
+    note right of ROJO : En amarillo y en rojo, ped_req se ignora
+
+    classDef verde fill:#00B050,stroke:#000,color:#fff
+    classDef amarillo fill:#FFD966,stroke:#000,color:#000
+    classDef rojo fill:#FF3B3B,stroke:#000,color:#fff
+    class VERDE verde
+    class AMARILLO amarillo
+    class ROJO rojo

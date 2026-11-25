@@ -1,0 +1,15 @@
+flowchart LR
+    subgraph NB["Con &lt;= (no bloqueante)"]
+        direction LR
+        D1(["d"]) --> F1["FF q1"] --> F2["FF q2"] --> O1(["q2"])
+    end
+    subgraph BL["Con = (bloqueante) en always @(posedge clk)"]
+        direction LR
+        D2(["d"]) --> F3["FF q2"] --> O2(["q2"])
+        X["q1 desaparece:<br/>q2 copia d en el mismo flanco"]:::mal
+    end
+    NB ~~~ BL
+
+    classDef ff fill:#9933FF,stroke:#000,color:#fff
+    classDef mal fill:#FF3399,stroke:#000,color:#fff
+    class F1,F2,F3 ff

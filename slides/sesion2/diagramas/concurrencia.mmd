@@ -1,0 +1,23 @@
+flowchart LR
+    subgraph SW["Software · un procesador"]
+        direction TB
+        L1["a = b + c"] --> L2["d = a * 2"] --> L3["e = d - 1"]
+    end
+    subgraph HW["Hardware · todo a la vez"]
+        direction TB
+        S1["sumador"]
+        S2["multiplicador"]
+        S3["restador"]
+        S1 --> S2 --> S3
+    end
+    SW ~~~ HW
+    N1(["Una línea después de otra,<br/>en el tiempo"]):::nota
+    N2(["Cables y compuertas que<br/>existen y trabajan siempre"]):::nota
+    SW --- N1
+    HW --- N2
+
+    classDef nota fill:#C2F1C8,stroke:#000,color:#000
+    classDef sw fill:#FFFFFF,stroke:#000,color:#000
+    classDef hw fill:#61CBF4,stroke:#000,color:#000
+    class L1,L2,L3 sw
+    class S1,S2,S3 hw

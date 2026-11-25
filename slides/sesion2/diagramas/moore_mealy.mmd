@@ -1,0 +1,20 @@
+flowchart TB
+    subgraph MO["Moore"]
+        direction LR
+        I1(["entradas"]) --> N1["siguiente<br/>estado"] --> E1["registro<br/>de estado"] --> S1["salidas"] --> O1(["luces"])
+        E1 --> N1
+    end
+    subgraph ME["Mealy"]
+        direction LR
+        I2(["entradas"]) --> N2["siguiente<br/>estado"] --> E2["registro<br/>de estado"] --> S2["salidas"] --> O2(["salidas"])
+        E2 --> N2
+        I2 -- "también" --> S2
+    end
+    MO ~~~ ME
+
+    classDef reg fill:#9933FF,stroke:#000,color:#fff
+    classDef comb fill:#61CBF4,stroke:#000,color:#000
+    classDef out fill:#00B050,stroke:#000,color:#fff
+    class E1,E2 reg
+    class N1,N2 comb
+    class S1,S2 out

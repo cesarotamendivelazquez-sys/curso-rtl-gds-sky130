@@ -1,0 +1,18 @@
+flowchart LR
+    RTL["<b>semaphore.v</b><br/>tu RTL"]
+    LINT["<b>make lint</b><br/>Verilator -Wall<br/><i>¿huele mal?</i>"]
+    SHOW["<b>make show</b><br/>Yosys proc; opt<br/><i>¿qué hardware describí?</i>"]
+    LATCH["<b>make latch</b><br/>Yosys<br/><i>¿hay latches?</i>"]
+    SIM["<b>make sim</b><br/>Icarus<br/><i>¿hace lo que pide?</i>"]
+    GIT(["<b>commit + push</b><br/>make entrega"])
+
+    RTL --> LINT --> SHOW --> LATCH --> SIM --> GIT
+    LINT -. "warnings" .-> RTL
+    SIM -. "FAIL" .-> RTL
+
+    classDef cod fill:#FFFFFF,stroke:#000,color:#000
+    classDef paso fill:#61CBF4,stroke:#000,color:#000
+    classDef fin fill:#00B050,stroke:#000,color:#fff
+    class RTL cod
+    class LINT,SHOW,LATCH,SIM paso
+    class GIT fin

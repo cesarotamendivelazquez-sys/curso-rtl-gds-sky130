@@ -6,7 +6,8 @@ S  ?=
 
 .DEFAULT_GOAL := help
 .PHONY: help humo slides slides-forzar clean-slides
-LAB_TARGETS := check rutas git-check pdk celda klayout entrega preguntas lint show sim latch
+LAB_TARGETS := check rutas git-check pdk celda klayout entrega preguntas lint show sim latch \
+               guardado wave respuestas captura cocotb wave-cocotb mutantes formal formal-bug formal-wave
 .PHONY: $(LAB_TARGETS)
 
 help:
