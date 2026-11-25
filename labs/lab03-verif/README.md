@@ -7,7 +7,7 @@ atrapa bugs que tú no metiste. El diseño es tu semáforo del lab02, con `ped_r
 | --- | --- | --- | --- |
 | 1 · El TB base y la onda | 10 min | Correr el TB base y ver `state`, `cnt` y las luces en GTKWave | `make sim` → PASS |
 | 2 · Un bug a propósito | 10 min | Prender dos luces en amarillo, encontrar el ciclo en la onda, capturarla | `make respuestas` → 3/3 |
-| 3 · cocotb | 30 min | Escribir un test dirigido y uno aleatorio en Python | `make cocotb`, `make mutantes` |
+| 3 · cocotb | 30 min | Escribir, paso a paso, un test dirigido y uno aleatorio en Python | `make cocotb`, `make mutantes` |
 | 4 · Formal (opcional) | 10 min | Demostrar "nunca dos luces" con SymbiYosys y ver un contraejemplo | `make formal` |
 | Cerrar | en casa | Commit, push y revisión | `make entrega` |
 
@@ -214,43 +214,99 @@ make cocotb
 Los dos tests salen **FAIL** con `NotImplementedError: TODO`: todavía no los escribes. Fíjate en el
 renglón `tiempos: verde 4, amarillo 3, rojo 5 ticks`: cocotb usa tiempos distintos a los del TB base.
 
-### 3.2 TODO 1 · El test dirigido · [Tú solo]
+### 3.2 TODO 1 · El test dirigido, paso a paso · [Juntos]
 
 **Especificación:** justo después de `arranca()`, durante **2 vueltas completas**, los colores salen
 en el orden verde → amarillo → rojo y **cada color dura exactamente** `tb.T[color]` ticks.
 
-En `test_dirigido`, borra el renglón `raise NotImplementedError(...)` y escribe la revisión en su lugar.
-Pistas:
+Se construye en tres pasos; después de cada uno se corre el test. En `test_dirigido`, **borra** el
+renglón `raise NotImplementedError("TODO 1: ...")` y en su lugar (con 4 espacios de sangría) escribe:
 
-- Justo después de `arranca()` el semáforo ya está en verde: **ese tick cuenta como el primero**.
-- Para cada vuelta y cada color: revisa con `assert` que `tb.luz()` sea ese color, cuenta cuántos
-  ticks se queda con `await tb.ticks(1)` y compara la cuenta con `tb.T[color]`.
-- El mensaje del `assert` es lo que vas a leer cuando falle: que diga vuelta, color, cuánto duró y cuánto debía.
-- Aquí **no** uses `modelo=True`: en el dirigido el que revisa eres tú.
+**Paso 1: solo el verde.** Durante `tb.T["verde"]` ticks la luz debe ser verde; al terminar, amarillo.
+Justo después de `arranca()` el semáforo ya está en verde: **ese tick cuenta como el primero**.
+
+```python
+    for tick in range(1, tb.T["verde"] + 1):
+        assert tb.luz() == "verde", f"tick {tick} del verde: está {tb.luz()}"
+        await tb.ticks(1)
+    assert tb.luz() == "amarillo", f"después del verde debía estar amarillo y está {tb.luz()}"
+```
+
+Guarda y corre:
 
 ```bash
 make cocotb TEST=test_dirigido
 ```
 
-### 3.3 TODO 2 · El test aleatorio · [Tú solo]
+> **Para ver que el test sí revisa:** cambia `tb.T["verde"] + 1` por `tb.T["verde"] + 2`, corre otra
+> vez y lee el mensaje del `assert`. Luego regrésalo.
+
+**Paso 2: los tres colores.** Cambia el código del paso 1 por un `for` sobre los colores: el
+`assert` de "después del verde" ya no hace falta, porque el siguiente color lo revisa en su primer tick.
+
+```python
+    for color in ("verde", "amarillo", "rojo"):
+        for tick in range(1, tb.T[color] + 1):
+            assert tb.luz() == color, f"tick {tick} del {color}: está {tb.luz()}"
+            await tb.ticks(1)
+        tb.log.info("%-8s %d ticks  ok", color, tb.T[color])
+```
+
+**Paso 3: dos vueltas.** Envuelve todo en `for vuelta in range(1, 3):` (agrega 4 espacios de sangría
+a lo de adentro y pon la vuelta en los mensajes). Al final, fuera de los `for`, revisa que haya
+empezado la tercera vuelta; así también se revisa que el último rojo no dure de más:
+
+```python
+    assert tb.luz() == "verde", f"después de 2 vueltas debía estar verde y está {tb.luz()}"
+```
+
+Corre otra vez `make cocotb TEST=test_dirigido`: deben salir los 6 renglones `ok` y `PASS`.
+Aquí **no** se usa `modelo=True`: en el dirigido el que revisa eres tú.
+
+### 3.3 TODO 2 · El test aleatorio, guiado por la cobertura · [Juntos]
 
 **Especificación:** unos cientos de pasos donde, en cada uno, se elige **al azar** entre apretar el
 botón (`tb.pulso`) unos ticks, dar un reset (`tb.reset`) de vez en cuando, o solo esperar
-(`tb.ticks`) unos ticks. El checker de una sola luz y el modelo revisan **cada tick** por su cuenta.
+(`tb.ticks`). El checker de una sola luz y el modelo revisan **cada tick** por su cuenta; tú solo
+generas el estímulo. Borra el `raise NotImplementedError("TODO 2: ...")` y escribe:
 
-En `test_aleatorio`, borra el `raise NotImplementedError(...)` y escribe el estímulo. Usa
-`random.random()` y `random.randint(a, b)`. Al final, `tb.cierra()` imprime la **cobertura** y falla
-si tu estímulo nunca apretó el botón en algún color o dio menos de 3 resets.
+**Paso 1: solo esperar.**
 
-```bash
-make cocotb TEST=test_aleatorio
-make cocotb TEST=test_aleatorio SEED=7      # otra semilla: otros casos al azar
+```python
+    for _ in range(300):
+        await tb.ticks(random.randint(1, 6))
 ```
 
-La semilla sale en el log (`Seeding Python random module with ...`): con `SEED=` repites exactamente
-una corrida que falló.
+Corre `make cocotb TEST=test_aleatorio`. Sale **FAIL** aunque el diseño esté bien: lee la tabla de
+**cobertura** al final. Nunca apretaste el botón ni diste resets: el test "pasó por todo" sin probar nada.
 
-### 3.4 ¿Tus tests sirven? Los mutantes · [Tú solo]
+**Paso 2: el botón.** Cambia el cuerpo del `for` por:
+
+```python
+        dado = random.random()
+        if dado < 0.30:
+            await tb.pulso(random.randint(1, 3))     # botón de 1 a 3 ticks
+        else:
+            await tb.ticks(random.randint(1, 6))     # solo esperar
+```
+
+Corre otra vez. ¿Qué renglones de la cobertura ya dicen `ok`? ¿Cuáles faltan?
+
+**Paso 3: los resets.** Agrega, entre el `if` y el `else`:
+
+```python
+        elif dado < 0.35:
+            await tb.reset(random.randint(1, 3))     # reset de 1 a 3 ticks
+```
+
+Corre: ahora `cobertura: OK` y `PASS`. Prueba otras semillas; la semilla sale en el log
+(`Seeding Python random module with ...`) y con `SEED=` repites exactamente una corrida:
+
+```bash
+make cocotb TEST=test_aleatorio SEED=7
+```
+
+### 3.4 ¿Tus tests sirven? Los mutantes · [Juntos]
 
 Un test que siempre dice PASS no sirve. `scripts/mutantes/` tiene 6 copias del semáforo, cada una con
 **un** bug distinto. Tus tests deben atraparlos (decir FAIL):
@@ -259,8 +315,7 @@ Un test que siempre dice PASS no sirve. `scripts/mutantes/` tiene 6 copias del s
 make mutantes
 ```
 
-El dirigido debe atrapar m1, m2 y m6; el aleatorio, los 6. Si alguno sale **SE ESCAPA**, mejora el
-test correspondiente y repite. Luego, el commit:
+El dirigido debe atrapar m1, m2 y m6; el aleatorio, los 6. Luego, el commit:
 
 ```bash
 git add cocotb/test_semaforo.py
@@ -268,6 +323,10 @@ git commit -m "lab03: tests dirigido y aleatorio en cocotb"
 ```
 
 Si quieres ver la onda de cocotb: `make wave-cocotb` (las señales están en `semaforo`).
+
+**Reto · [Tú solo]** (si te sobra tiempo): en el aleatorio cambia `0.30` por `0.02` y `range(300)`
+por `range(50)`, y corre con `SEED=1`, `2` y `3`. ¿Qué renglones de la cobertura fallan? ¿Algún
+mutante se escapa en `make mutantes`? Regrésalo antes del commit.
 
 > **Para discutir:** ¿por qué el dirigido no atrapa m3 ni m5, si están igual de mal? ¿Quién decide
 > cuándo ya probaste suficiente? (Pista: la tabla de cobertura.)
@@ -330,7 +389,7 @@ git diff HEAD upstream/soluciones -- cocotb/test_semaforo.py
 | `make cocotb`: `NotImplementedError: TODO` | Te falta borrar el `raise NotImplementedError(...)` de ese test |
 | `make cocotb`: `SyntaxError` o `IndentationError` | Python usa la sangría: los renglones dentro del test van con 4 espacios |
 | `RuntimeWarning: coroutine ... was never awaited` | Te faltó `await` antes de `tb.ticks`, `tb.pulso` o `tb.reset` |
-| El dirigido dice que el verde duró un tick de menos | El tick justo después de `arranca()` también cuenta |
+| El dirigido falla en el primer tick del amarillo | El tick justo después de `arranca()` también cuenta: el `range` va de 1 a `tb.T[color] + 1` |
 | `cobertura incompleta` | Tu estímulo casi no aprieta el botón o casi no da resets: sube la probabilidad o los pasos |
 | `comparador: el modelo esperaba ...` en el aleatorio | Tu RTL no cumple la especificación del botón en algún caso. Revísalo con `make cocotb TEST=test_aleatorio SEED=<la del log>` y `make wave-cocotb` |
 | `make mutantes`: m1 o m2 `SE ESCAPA` del dirigido | Tu dirigido no revisa la duración o el orden de los colores |
