@@ -35,6 +35,7 @@ fi
 
 if [ -s "$OUT" ]; then
     echo "Listo: $OUT ($(du -h "$OUT" | cut -f1)). Revísala:  firefox $OUT &"
+    echo "(si Firefox imprime \"Sandbox: ... EPERM\", se ignora)"
 else
     echo "No pude tomar la foto con las herramientas de la imagen."
     echo "Plan B: en GTKWave, File -> Grab To File, y guárdala como $OUT"

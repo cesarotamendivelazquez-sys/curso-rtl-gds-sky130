@@ -330,8 +330,12 @@ def onda_revisa():
     res = []
     g = LAB / GTKW
     if not g.exists():
-        res.append((False, f"{GTKW} no existe",
-                    "parte 2: en GTKWave, File -> Write Save File, guárdalo con ese nombre"))
+        otros = sorted(x.name for x in (LAB / "entrega").glob("onda*")
+                       if x.name not in ("onda_bug.png",))
+        pista = "parte 2: en GTKWave, File -> Write Save File As, con el nombre onda_bug.gtkw"
+        if otros:
+            pista = f"lo guardaste como {otros[0]}: renómbralo con  mv entrega/{otros[0]} {GTKW}"
+        res.append((False, f"{GTKW} no existe", pista))
     else:
         senales, marcador = gtkw_datos(g.read_text(errors="replace"))
         faltan = [s for s in ("state", "cnt", "red", "yellow", "green")

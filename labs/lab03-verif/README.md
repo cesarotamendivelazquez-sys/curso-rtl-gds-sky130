@@ -74,8 +74,10 @@ make wave
 En GTKWave:
 
 1. En el panel de la izquierda (**SST**) da clic en `tb_semaphore` y luego en `dut`.
-2. Abajo aparecen las señales del semáforo: selecciona `state` y `cnt` y da clic en **Append**.
-3. Regresa a `tb_semaphore` y agrega `red`, `yellow` y `green`.
+2. Abajo aparecen las señales del semáforo. Selecciona **solo** `state`, `cnt`, `red`, `yellow` y
+   `green` (`Ctrl+clic` para elegir varias) y da clic en **Append**. Los `parm` de arriba son los
+   parámetros: no hacen falta.
+3. Si te equivocas, selecciona la señal en el panel **Signals** y bórrala con `Supr`.
 4. Menú **Time → Zoom → Zoom Best Fit** para ver toda la simulación.
 
 Mira cómo `cnt` cuenta 0, 1, 2 en verde y cómo cambia `state` cuando el contador llega al final.
@@ -130,10 +132,13 @@ El tiempo sale en **ps**: el TB lo imprime con `%t`, que usa la precisión del `
 En GTKWave (el que dejaste abierto):
 
 1. **File → Reload Waveform**: carga la onda nueva y conserva tus señales.
-2. Busca la **primera** vez que `yellow` y `green` están en 1 al mismo tiempo.
+2. Busca la **primera** vez que `yellow` y `green` están en 1 al mismo tiempo (si no ves toda la
+   simulación: **Time → Zoom → Zoom Best Fit**).
 3. Da **clic** en la onda justo ahí: aparece el marcador (una línea vertical) y arriba su tiempo.
 4. Lee cuánto vale `state` en ese punto.
-5. **File → Write Save File As**, entra a `labs/lab03-verif/entrega/` y guárdalo como `onda_bug.gtkw`.
+5. **File → Write Save File As**, entra a `labs/lab03-verif/entrega/` y escribe el nombre
+   **`onda_bug.gtkw`** (con esa terminación exacta: si escribes otra, GTKWave le agrega `.gtkw` al final).
+   Revisa con `ls entrega`.
 
 ### 2.4 Captura la onda · [Tú solo]
 
@@ -319,7 +324,9 @@ git diff HEAD upstream/soluciones -- cocotb/test_semaforo.py
 | `make sim` sigue en FAIL al final | Quedó el bug: `git restore ../../common/rtl/semaphore/rtl/semaphore.v` |
 | En GTKWave no cambia nada tras `make sim` | Falta **File → Reload Waveform** |
 | `make respuestas`: R1 en MAL con un número muy grande | Ese número está en ps: pásalo a ns |
+| `make entrega`: `onda_bug.gtkw no existe` | Lo guardaste con otro nombre (`onda_bug.gtw.gtkw`, por ejemplo): `make entrega` te dice cuál y cómo renombrarlo con `mv` |
 | `make captura`: `No hay pantalla` | La corriste fuera del escritorio: usa una terminal de noVNC |
+| `firefox ...`: `Sandbox: CanCreateUserNamespace() ... EPERM` | Aviso de Firefox dentro de Docker: se ignora |
 | `make cocotb`: `NotImplementedError: TODO` | Te falta borrar el `raise NotImplementedError(...)` de ese test |
 | `make cocotb`: `SyntaxError` o `IndentationError` | Python usa la sangría: los renglones dentro del test van con 4 espacios |
 | `RuntimeWarning: coroutine ... was never awaited` | Te faltó `await` antes de `tb.ticks`, `tb.pulso` o `tb.reset` |
